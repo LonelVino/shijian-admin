@@ -4,8 +4,8 @@ import { getToken } from '@/utils/auth';
 import { UserModule } from '@/store/modules/user';
 
 const service = axios.create({
-  baseURL: process.env.VUE_APP_MOCK_API,
-  timeout: 5000,
+  baseURL: '/api',
+  timeout: 10000,
 });
 
 // Request interceptors
@@ -33,13 +33,14 @@ service.interceptors.response.use(
     // code == 60204: account or password is incorrect
     // You can change this part for your own usage.
     const res = response.data;
-    if (res.code !== 20000) {
+    console.log(res)
+    if (res.success!==1 && res.code !== 200) {
       Message({
-        message: res.message,
+        message: '未知错误' + res.message,
         type: 'error',
-        duration: 5 * 1000,
+        duration: 10 * 1000,
       });
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.code === 508 || res.code === 512 || res.code === 500) {
         MessageBox.confirm(
           '你已被登出，可以取消继续留在该页面，或者重新登录',
           '确定登出',
@@ -63,7 +64,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 5 * 1000,
+      duration: 10 * 1000,
     });
     return Promise.reject(error);
   },

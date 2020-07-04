@@ -4,10 +4,11 @@
       <el-col el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
         <div class="table-content">
           <div class="table-container">
-            <div class="table-text">项目审核</div>
+            <div class="table-text">项目测验
+            </div>
             <el-tag class="table-tag"> 更多</el-tag>
           </div>
-          <grow-table/>
+          <examine-table/>
         </div>
       </el-col>
     </el-row>
@@ -17,12 +18,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { UserModule } from '../../store/modules/user';
-import GrowTable from './components/GrowTable.vue';
+import ExamineTable from './components/ExamineTable.vue';
 import { ElMessageComponent } from 'element-ui/types/message';
 
 @Component({
   components: {
-    GrowTable
+    ExamineTable
   }
 })
 export default class Dashboard extends Vue {

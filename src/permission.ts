@@ -11,14 +11,13 @@ Nprogress.configure({ showSpinner: false });
 const whiteList = ['/login'];
 
 router.beforeEach((to: Route, from: Route, next: any) => {
-  console.log(Nprogress.start())
   Nprogress.start();
   if (getToken()) {
     if (to.path === '/login') {
       next({ path: '/' });
       Nprogress.done();
     } else {
-      if (UserModule.roles.length === 0) {
+      if (UserModule.role === '') {
         UserModule.GetInfo().then(() => {
           next();
         }).catch((err) => {
@@ -33,6 +32,7 @@ router.beforeEach((to: Route, from: Route, next: any) => {
     }
   } else {
     console.log(to.path)
+    console.log(UserModule.name)
     if (whiteList.indexOf(to.path) !== -1) { //要检索的字符串值没有出现，则该方法返回 -1
       next();
     } else {

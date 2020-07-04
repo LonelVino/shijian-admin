@@ -1,10 +1,12 @@
 <template>
   <div class="navbar">
     <Hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
-    <el-dropdown class="avatar-container" trigger="click">
+    <el-dropdown class="avatar-container" trigger="click">   
       <div class="avatar-wrapper">
-        <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar">
-        <i class="el-icon-caret-bottom"/>
+        <div class="navbar-text">
+          <p>{{ username }}</p>
+        </div>
+        <i id="icon-user" class="el-icon-user-solid"/>
       </div>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
         <router-link class="inlineBlock" to="/">
@@ -12,6 +14,9 @@
             Home
           </el-dropdown-item>
         </router-link>
+        <el-dropdown-item divided>
+          <span style="display:block;" @click="handleLogin">LogIn</span>
+        </el-dropdown-item>
         <el-dropdown-item divided>
           <span style="display:block;" @click="logout">LogOut</span>
         </el-dropdown-item>
@@ -25,6 +30,7 @@ import Hamburger from '@/components/Hamburger/index.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { AppModule } from '@/store/modules/app';
 import { UserModule } from '@/store/modules/user';
+import { getRedirectUrl } from '../../../api/cas';
 
 @Component({
   components: {
@@ -36,12 +42,32 @@ export default class Navbar extends Vue {
     return AppModule.sidebar;
   }
 
-  get avatar() {
-    return UserModule.avatar;
+  get username() {
+    return UserModule.name;
   }
 
   private toggleSideBar() {
     AppModule.ToggleSideBar(false);
+  }
+
+  mounted() {
+    console.log(this.username);
+  }
+
+  private async handleLogin() {
+    try {
+      this.$message({
+        type: 'info',
+        message: '正在登陆中'
+      })
+      const data:any = await getRedirectUrl()
+      location.href = data.data
+    } catch (message) {
+      this.$message({
+        type: 'error',
+        message: '无法登录' + message
+      })
+    }
   }
 
   private logout() {
@@ -77,19 +103,27 @@ export default class Navbar extends Vue {
     display: inline-block;
     position: absolute;
     right: 35px;
-
     .avatar-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center; 
       cursor: pointer;
-      margin-top: 5px;
       position: relative;
       line-height: initial;
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
+      height: 100%;
+      .navbar-text {
+        p {
+          height: 0.8vw;
+          margin: auto;
+          font-size: 0.8vw;
+        }
       }
-
+      i {
+       transform: scale(2)
+      }
+      #icon-user {
+        margin-left: 2vw;
+      }
       .el-icon-caret-bottom {
         position: absolute;
         right: -20px;

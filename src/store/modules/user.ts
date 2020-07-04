@@ -6,16 +6,18 @@ import store from '@/store';
 export interface UserState{ 
   token: string;
   name: string;
-  avatar: string;
-  roles: string[];
+  has_login: number;
+  role: string;
+  user_id: number;
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements UserState { 
   public token = '';
   public name = '';
-  public avatar = '';
-  public roles = [];
+  public role = '';
+  public has_login = 0;
+  public user_id = 0;
 
   @Action({ commit: 'SET_TOKEN' })
   public async Login(userInfo: { username: string; password: string }) { 
@@ -31,26 +33,27 @@ class User extends VuexModule implements UserState {
     return '';
   }
 
-  @MutationAction({ mutate: ['roles', 'name', 'avatar'] })
+  @MutationAction({ mutate: ['role', 'name', 'user_id', 'has_login', 'token'] })
   public async GetInfo() { 
     const token = getToken();
     if (token === undefined) { 
       throw Error('GetInfo: token is undefined');
     }
     const { data } = await getInfo(token);
-    if (data.roles && data.roles.length > 0) {
+    if (data.role && data.role.length > 0) {
       return {
-        roles: data.roles,
-        name: data.name,
-        avatar: data.avatar,
+        role: data.role,
+        name: data.user.userinfo.username,
+        has_login: data.has_login,
+        user_id: data.user.userid,
+        token: token
       }
     } else { 
       throw Error('GetInfo: roles must be a non-null array!');
     }
   }
-    
 
-  @MutationAction({ mutate: ['token', 'roles'] })
+  @MutationAction({ mutate: ['token', 'role'] })
   public async LogOut() { 
     if (getToken() === undefined) { 
       throw Error('LogOut: token is undefined!');
@@ -59,13 +62,20 @@ class User extends VuexModule implements UserState {
     removeToken();
     return {
       token: '',
-      roles: [],
+      role: '',
     };
   }
 
   @Mutation
   private SET_TOKEN(token: string) { 
     this.token = token;
+  }
+
+  @Mutation
+  public GetUserInfo(data:any) { 
+    this.role = data.role;
+    this.name = data.data.user.userinfo.username;
+    this.has_login = data.has_login;
   }
 }
 

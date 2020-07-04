@@ -1,4 +1,3 @@
-import { Component, Prop } from 'vue-property-decorator';
 <template>
   <a v-if="isExternalLink(to)" :href="to" target="_blank" rel="noopener">
     <slot/>

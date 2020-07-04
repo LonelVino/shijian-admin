@@ -28,8 +28,7 @@
 </template>
 
 <script lang="ts">
-// @ts-ignore
-import path from 'path'
+import path from 'path';
 import { Route } from 'vue-router';
 import { isExternal } from '@/utils/validate';
 import { Component, Vue, Prop } from 'vue-property-decorator';

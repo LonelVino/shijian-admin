@@ -4,12 +4,19 @@ function resolve(dir) {
 }
 
 module.exports = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND,
+        changeOrigin: true
+      }
+    },
+    port: 8081, // 端口号
+  },
+ 
   publicPath: process.env.NODE_ENV === 'production' ? '/shijian-admin/' : '/',
   pwa: {
     name: 'shijian-admin'
-  },
-  devServer: {
-    port: 8083, // 端口号
   },
   chainWebpack: config => {
     config.module
