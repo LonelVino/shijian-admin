@@ -4,7 +4,7 @@
     <el-dropdown class="avatar-container" trigger="click">   
       <div class="avatar-wrapper">
         <div class="navbar-text">
-          <p>{{ username }}</p>
+          <p>{{ net_id }}</p>
         </div>
         <i id="icon-user" class="el-icon-user-solid"/>
       </div>
@@ -14,10 +14,10 @@
             Home
           </el-dropdown-item>
         </router-link>
-        <el-dropdown-item divided>
+        <el-dropdown-item v-if="no_token" divided>
           <span style="display:block;" @click="handleLogin">LogIn</span>
         </el-dropdown-item>
-        <el-dropdown-item divided>
+        <el-dropdown-item v-else divided>
           <span style="display:block;" @click="logout">LogOut</span>
         </el-dropdown-item>
       </el-dropdown-menu>
@@ -31,6 +31,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { AppModule } from '@/store/modules/app';
 import { UserModule } from '@/store/modules/user';
 import { getRedirectUrl } from '../../../api/cas';
+import axios from 'axios'
 
 @Component({
   components: {
@@ -42,16 +43,16 @@ export default class Navbar extends Vue {
     return AppModule.sidebar;
   }
 
-  get username() {
-    return UserModule.name;
+  get no_token() {
+    return UserModule.token == '';
+  }
+
+  get net_id() {
+    return UserModule.net_id;
   }
 
   private toggleSideBar() {
     AppModule.ToggleSideBar(false);
-  }
-
-  mounted() {
-    console.log(this.username);
   }
 
   private async handleLogin() {
@@ -71,9 +72,18 @@ export default class Navbar extends Vue {
   }
 
   private logout() {
-    UserModule.LogOut().then(() => {
-      location.reload();  // 为了重新实例化vue-router对象 避免bug
-    });
+   axios.delete('/api/cas')
+    .then(r => {
+      document.write(r.data);
+      UserModule.FedLogOut();
+      localStorage.removeItem('token')
+    })
+    .catch(e => {
+      this.$message({
+        type: 'error',
+        message: '注销失败：' + e
+      })
+    })
   }
 }
 </script>

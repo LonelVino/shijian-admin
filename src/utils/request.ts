@@ -33,7 +33,6 @@ service.interceptors.response.use(
     // code == 60204: account or password is incorrect
     // You can change this part for your own usage.
     const res = response.data;
-    console.log(res)
     if (res.success!==1 && res.code !== 200) {
       Message({
         message: '未知错误' + res.message,

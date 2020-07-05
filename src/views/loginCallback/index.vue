@@ -14,6 +14,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { runCallback } from '../../api/cas';
 import { UserModule } from '../../store/modules/user';
 import { Message } from 'element-ui';
+import { getToken, setToken } from '@/utils/auth';
 
 @Component
 export default class LoginCallback extends Vue {
@@ -28,6 +29,8 @@ export default class LoginCallback extends Vue {
         type: 'success',
         message: '登陆成功',
       })
+      UserModule.SET_TOKEN('shijian-admin');
+      localStorage.setItem('token', 'shijian-admin');
     } catch (message) {
       this.$message({
         type: 'error',

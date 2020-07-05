@@ -6,7 +6,7 @@
     :rules="loginRules"
     class="login-form"
     auto-complete="on" label-position="left">
-    <h3 class="title">vue3-admin</h3>
+    <h3 class="title">暑期实践后台管理</h3>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -49,6 +49,8 @@ import { isValidUsername } from '@/utils/validate';
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Route } from 'vue-router';
 import { ElForm } from 'element-ui/types/form';
+import { getRedirectUrl } from '@/api/cas';
+
 
 const validateUsername = (rule: any, value: string, callback: any) => {
   if (!isValidUsername(value)) {
@@ -92,12 +94,27 @@ export default class Login extends Vue {
     (this.$refs.loginForm as ElForm).validate((valid: boolean) => {
       if(valid) {
         this.loading = true;
-        this.$router.push( { path: this.redirect || '/' });
+        this.handlRedirect();
       } else {
         console.log('this is invalid');
         return false;
       }
     });
+  }
+  private async handlRedirect() {
+    try {
+      this.$message({
+        type: 'info',
+        message: '正在登陆中'
+      })
+      const data:any = await getRedirectUrl()
+      location.href = data.data
+    } catch (message) {
+      this.$message({
+        type: 'error',
+        message: '无法登录' + message
+      })
+    }
   }
 }
 

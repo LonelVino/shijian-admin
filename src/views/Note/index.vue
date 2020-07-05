@@ -123,7 +123,7 @@
         <el-button v-if="reply.row.status == 0" type="primary" :loading="reply.loading" @click="submitReply()">
           确 定
         </el-button>
-        <el-button v-else type="primary" :loading="reply.loading" @click="submitEdit()">
+        <el-button v-else type="primary" :loading="reply.loading" @click="submitReply()">
           确 定
         </el-button>
       </span>
@@ -173,11 +173,11 @@ export default {
     return {
       loading: false,
       notes: [],
-      edit: {
+      edit: { // 修改留言
         row: {},
         visible: false
       },
-      reply: {
+      reply: { // 回复留言
         row: {},
         note_id: '',
         content: '',
@@ -206,13 +206,13 @@ export default {
         })
       }
     },
-    handleReply(row) {
+    handleReply(row) {  // 构造回复的数据体
       this.dialogReplyVisible = true
       this.reply.note_id = row.note_id
       this.reply.row = row,
       this.reply.user_name = this.getUserName(row.author_id)
     },
-    submitReply() {
+    submitReply() {  // 提交回复
       if (this.reply.content == '') {
         this.$message({
           type: 'warning',
@@ -232,7 +232,7 @@ export default {
         this.reply.content = ''
         this.$message({
           type: 'success',
-          message: '回复成功'
+          message: this.reply.row.status == 0 ? '回复成功': '回复修改成功'
         })
         done()
         this.changePages(1)
@@ -253,11 +253,11 @@ export default {
       }
       return params
     },
-    handleEdit(data) {
+    handleEdit(data) { // 修改留言
       (this.edit.visible = true), (this.edit.row = this.parseForm(data))
       this.temp = this.parseForm(data)
     },
-    submitEdit() {
+    submitEdit() {  // 提交留言的修改
       if (
         this.edit.row.title == this.temp.title &&
         this.edit.row.content == this.temp.content
@@ -411,9 +411,14 @@ export default {
   p {
     margin: 0.5em 0;
     font-size: 1.1em;
+    text-align: left;
   }
 }
-
+.note-edit-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 .edit-title,
 .edit-content {
   margin-bottom: 10px;

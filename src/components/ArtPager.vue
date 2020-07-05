@@ -62,7 +62,6 @@ export default {
           form.page = 1
           d = await this.requestFunc(form)
         }
-        console.log(d.data)
         this.total = d.data.total // 更新总条数
         this.list = d.data.data // 请求成功更新数组
       } catch (msg) {

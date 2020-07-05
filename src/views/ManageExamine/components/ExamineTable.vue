@@ -1,5 +1,47 @@
 <template>
   <div>
+    <div class="filter">
+      <!-- 挂靠单位 -->
+      <div class="select-belong">
+        <div class="select-display">
+          <div v-if="org<=1" class="select-1">
+            <FitForm ref="form_belong" :mirrors="mirrors_belongs" />
+          </div>
+          <div class="select-2">
+            <FitForm ref="form_type" :mirrors="mirrors_type" />
+          </div>
+        </div>
+        <div class="select-button">
+          <el-button class="belongs-button" type="success" @click="select()">
+            筛选
+          </el-button>
+          <el-button class="belongs-button" type="info" @click="resetAll()">
+            恢复默认
+          </el-button>
+        </div>
+      </div>
+      <div class="search">
+        <div class="search-name">
+          <div class="search-display">
+            <p>队伍名</p>
+            <el-input
+              v-model="select_name.team_name"
+              placeholder="请输入队伍名"
+              clearable
+            >
+            </el-input>
+          </div>
+          <div class="select-button">
+            <el-button class="belongs-button" type="success" @click="getOneTeamByName()">
+              搜索
+            </el-button>
+            <el-button class="belongs-button" type="info" @click="resetAll()">
+              恢复默认
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </div>
      <el-tabs v-model="status" class="table-tab" @tab-click="handleClick">
       <el-tab-pane label="全部项目" name="all"></el-tab-pane>
       <el-tab-pane label="已出行队伍" name="4"></el-tab-pane>
@@ -237,6 +279,53 @@
         </el-table-column>
       </el-table>
     </pager>
+    <el-dialog v-dialogDrag :visible.sync="dialogVisible" :fullscreen="isPhone">
+      <TeamInfoDisplay :team-info="dialogRow" :teammates-info="teammates" />
+       <!-- 项目通过测验   -->
+      <el-button
+        round
+        type="success"
+        :disabled="!canPass(dialogRow)"
+        @click="projectPass(dialogRow)"
+      >
+        通过
+      </el-button>
+      <!-- 项目不通过测验   -->
+      <el-button
+        round
+        type="danger"
+        :disabled="!canReject(dialogRow)"
+        @click="projectReject(dialogRow)"
+      >
+        不通过
+      </el-button>
+      <!-- 推荐项目校级答辩   -->
+      <el-button
+        round
+        type="success"
+        :disabled="!canRecommon(dialogRow)"
+        @click="projectRecommon(dialogRow)"
+      >
+        推荐答辩
+      </el-button>
+      <!-- 取消项目校级答辩   -->
+      <el-button
+        round
+        type="danger"
+        :disabled="!canRecRej(dialogRow)"
+        @click="projectRecRej(dialogRow)"
+      >
+        取消答辩资格
+      </el-button>
+      <el-button
+        round
+        type="success"
+        size="small"
+        @click="Suggest(dialogRow)"
+      >
+        给出建议
+      </el-button>
+    </el-dialog>
     <el-dialog v-dialogDrag title="给出建议" :visible.sync="suggestDialogVisible" :fullscreen="isPhone">
       <el-input
         v-model="suggestion"
@@ -259,6 +348,7 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator';
 import Pager from '@/components/ArtPager.vue';
+import TeamInfoDisplay from '@/components/TeamInfoDisplay'
 import statusMixin from '@/utils/static/status';
 import { BELONGTOS, PRACTICE_TYPES, PRACTICE_FORMS, PRACTICE_THEMES } from '@/utils/static/consts.js';
 import { 
@@ -272,6 +362,8 @@ import {
 import { showAsynConfirm } from '@/utils/messageBox';
 import { TeamModule } from '../../../store/modules/team';
 import { DeviceType, AppModule } from '@/store/modules/app';
+import FitForm from '@/components/FitForm/FitForm.vue'
+import { UserModule } from '../../../store/modules/user';
 
 const mirrors_belongs = [
   {
@@ -295,7 +387,9 @@ const mirrors_type = [
 export default {
   name: 'ManageCheck',
   components: {
-    Pager
+    Pager,
+    TeamInfoDisplay,
+    FitForm
   },
   mixins: [statusMixin],
   data() {
@@ -331,21 +425,28 @@ export default {
     currentTeamId(){
       return TeamModule.currentTeamId;
     },
+    org() {
+      return UserModule.org;
+    },
     isPhone() {
       return this.device === DeviceType.Mobile
     }
   },
   methods: {
-    saveCurrentTeamId: TeamModule.saveCurrentTeamId,
     // 给pager方法
     getList: getAdminTeams,
     // 搜索单只队伍
     async getOneTeamByName() {
       try {
         const data = await getOneTeamByName(this.select_name)
-        this.teams = data
-        this.saveCurrentTeamId(data[0].team_id)
-        this.openDialog(data[0])
+        this.teams = data.data
+        console.log(this.teams[0])
+        TeamModule.saveCurrentTeamId(this.teams[0].team_id)
+        this.$message({
+          type: 'success',
+          message: '查询队伍成功'
+        })
+        this.openDialog(this.teams[0])
       } catch (err) {
         this.$message({
           type: 'error',
@@ -370,10 +471,17 @@ export default {
     async select() {
       const form_1 = this.$refs['form_belong']
       const form_2 = this.$refs['form_type']
-      const data_1 = form_1.getData()
+      let data_1 = ''
+      if (UserModule.org <= 1) {
+        data_1 = form_1.getData()
+      }
       const data_2 = form_2.getData()
       console.log(data_1, data_2)
-      this.belongs = data_1.belongs
+      if (UserModule.org <= 1) {
+        this.belongs = data_1.belongs
+      } else {
+        this.belongs = 0
+      }
       this.project_types = data_2.project_types
       this.loading = true
       setTimeout(() => {
@@ -385,7 +493,10 @@ export default {
     resetAll() {
       const form_1 = this.$refs['form_belong']
       const form_2 = this.$refs['form_type']
-      const data_1 = form_1.setData(0)
+      let data_1 = ''
+      if (UserModule.org <= 1) {
+        data_1 = form_1.setData(0)
+      }
       const data_2 = form_2.setData(0)
       console.log(data_1, data_2)
       this.belongs = 0
@@ -560,6 +671,117 @@ export default {
 
 .suggest-button {
   margin-top: 1vw;
+}
+.filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.search {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin: 0.5vw;
+}
+.search-name {
+  display: flex;
+  flex-direction: row;
+}
+.search-display {
+  p {
+    white-space: nowrap;
+    margin: 0.6vw;
+  }
+  display: flex;
+  width: 56.5%;
+  flex-direction: row;
+  margin-left: -1vw;
+  margin-right: 0.5vw
+}
+.select-belong {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 75%;
+  min-width: 800px;
+  margin: 0.5vw;
+  max-height: 60px;
+  p {
+    font-size: 22px;
+    font-family: "Microsoft YaHei";
+    color: rgb(78, 64, 53);
+    font-weight: bold;
+    transform: scale(0.94, 1.08);
+    margin-top: 0.3em;
+    margin-right: 1.0em;
+  };
+  .select-display {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+  .select-button {
+    display: flex;
+    flex-direction: row;
+    max-height: 39.5px;
+    .belongs-button {
+      transform: scale(0.9,0.9);
+    }
+  }
+}
+@media screen and (max-width: 1400px) {
+  .filter {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .search {
+    justify-content: flex-start;
+    transform: scale(0.9);
+    margin: 0.5vw;
+    left: -30px;
+    position: relative;
+  }
+  .search-name {
+    min-width: 600px;
+  }
+  .search-display {
+    width: 66.5%;
+  }
+}
+@media screen and (max-width: 900px) {
+  .select-belong {
+    .select-display {
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+    }
+  }
+}
+@media screen and (max-width: 700px) {
+  .select-belong p {
+    font-size: 18px;
+  }
+  .select-belong {
+    flex-direction: column;
+    .select-button {
+      margin-top: -25px;
+      margin-bottom: 20px;
+    }
+    .belongs-button {
+      transform: scale(0.9,0.9);
+    }
+  }
+}
+@media screen and (max-width: 410px) {
+  .select-belong {
+    p{
+      font-size: 15px;
+    }
+    .belongs-button {
+      transform: scale(0.8,0.8);
+    }
+  }
 }
 </style>
 

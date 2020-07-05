@@ -17,17 +17,6 @@
             sortable
             label="标题"
           ></el-table-column>
-          <!-- <el-table-column
-            label="上传者"
-            sortable
-            width="180"
-          >
-            <template slot-scope="scope">
-              <div class="line">
-                {{ scope.row.author_id }}
-              </div>
-            </template>
-          </el-table-column> -->
           <el-table-column prop="create_time" label="上传时间" width="180"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
@@ -227,7 +216,6 @@ export default {
     },
     // 上传失败时
     onError(err) {
-      console.log(err)
       this.$message({
         type: 'error',
         message: '上传失败！'
@@ -254,20 +242,24 @@ export default {
       this.dialogTableVisible = true
       this.myMaterials = []
       try {
-        const data = await getAllGuide()
-        for (let i = 0; i < data.total; i++) {
-          data.data[i].isCheck = 'false'
-          if (data.data[i].author_id == UserModule.user_info.user_id) {
-            data.data[i].isCheck = 'true'
+        let data = await getAllGuide()
+        const total = data.data.total
+        data = data.data.data
+        for (let i = 0; i < total; i++) {
+          if (data[i].author_id == UserModule.user_id) {
             this.myMaterials.push({
-              guide_id: data.data[i].guide_id,
-              create_time: data.data[i].create_time,
-              author_id: data.data[i].author_id,
-              title: data.data[i].title,
-              update_time: data.data[i].update_time
+              guide_id: data[i].guide_id,
+              create_time: data[i].create_time,
+              author_id: data[i].author_id,
+              title: data[i].title,
+              update_time: data[i].update_time
             })
           }
         }
+      this.$message({
+          type: 'success',
+          message: '获取成功'
+        })
       } catch (message) {
         this.$message({
           type: 'error',
@@ -296,16 +288,14 @@ export default {
 .panel-material {
   .upload-title,
   .title {
+    display: flex;
+    justify-content: flex-start;
     width: 10vw;
     line-height: 46px;
     font-family: "Microsoft YaHei";
     font-weight: bold;
     transform: scale(0.94, 1.08);
     margin-bottom: 10px;
-  }
-
-  .upload-title {
-    margin-left: -0.5em;
   }
 
   .material-board {
@@ -320,11 +310,15 @@ export default {
     width: 40%;
     margin-top: 2em;
     overflow: hidden;
+    margin-left: -6vw;
+    .upload-title{
+      margin-left: 6vw;
+    }
     .switch {
       margin: 1em 0;
     }
     .title {
-      margin: 1em 0 0 -2em;
+      margin: 1em 0 0 2em;
     }
     .upload-demo {
       margin: 1em 0;

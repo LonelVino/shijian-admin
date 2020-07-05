@@ -8,6 +8,6 @@ export const getByNetId = (id: number) =>
 
 export const getByUserId = (id: number) =>
   request({
-    url: '/common/hgetById' + id,
+    url: '/common/getById/' + id,
     method: 'get',
   });

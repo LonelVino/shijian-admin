@@ -9,6 +9,8 @@ export interface UserState{
   has_login: number;
   role: string;
   user_id: number;
+  org: number;
+  net_id: string;
 }
 
 @Module({ dynamic: true, store, name: 'user' })
@@ -18,22 +20,18 @@ class User extends VuexModule implements UserState {
   public role = '';
   public has_login = 0;
   public user_id = 0;
-
-  @Action({ commit: 'SET_TOKEN' })
-  public async Login(userInfo: { username: string; password: string }) { 
-    const username = userInfo.username.trim();
-    const { data } = await login(username, userInfo.password);
-    setToken(data.token);
-    return data.token;
-  }
+  public org = 0;
+  public net_id = '';
 
   @Action({ commit: 'SET_TOKEN' })
   public async FedLogOut() { 
     removeToken();
+    this.REMOVE_TOKEN();
+    console.log(this.token)
     return '';
   }
 
-  @MutationAction({ mutate: ['role', 'name', 'user_id', 'has_login', 'token'] })
+  @MutationAction({ mutate: ['role', 'name', 'has_login', 'token'] })
   public async GetInfo() { 
     const token = getToken();
     if (token === undefined) { 
@@ -45,7 +43,6 @@ class User extends VuexModule implements UserState {
         role: data.role,
         name: data.user.userinfo.username,
         has_login: data.has_login,
-        user_id: data.user.userid,
         token: token
       }
     } else { 
@@ -67,15 +64,32 @@ class User extends VuexModule implements UserState {
   }
 
   @Mutation
-  private SET_TOKEN(token: string) { 
+  public SET_TOKEN(token: string) { 
     this.token = token;
+  }
+
+  @Mutation
+  private REMOVE_TOKEN() { 
+    this.token = '';
   }
 
   @Mutation
   public GetUserInfo(data:any) { 
     this.role = data.role;
     this.name = data.data.user.userinfo.username;
-    this.has_login = data.has_login;
+    this.has_login = data.data.has_login;
+  }
+
+  @Mutation
+  public GetLoggedUserInfo(data: any) { 
+    if (data.success == 1) { 
+      const log_data = data.data
+      this.role = log_data.role;
+      this.net_id = log_data.net_id;
+      this.has_login = 1;
+      this.user_id = log_data.user_id;
+      this.org = log_data.org
+    }
   }
 }
 

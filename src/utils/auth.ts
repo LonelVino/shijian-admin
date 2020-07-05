@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 
-const TokenKey = 'vue_admin_template_token';
+const TokenKey = 'shijian-admin';
+
 
 export const getToken = () => Cookies.get(TokenKey);
 

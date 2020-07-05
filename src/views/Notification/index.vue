@@ -60,53 +60,55 @@
       <div class="notification-edit-content">
         <el-input v-model="edit.row.title" class="edit-title" placeholder="请填写新的实践公告信息标题"></el-input>
         <div class="container">
-          <el-input
+          <quill-editor
             id="info-notification-mce"
+            ref="myQuillEditor"
             v-model="edit.row.content"
             v-loading="edit.loading"
-            type="textarea"
-            :rows="4"
-            :cols="10"
-            class="editor-content"
+            style="height: 500px;"
+            :options="editorOption"
             placeholder="请输入新的通知内容"
-          ></el-input>
+          >
+          </quill-editor>
         </div>
-        <div class="block">
-          <span class="demonstration">
-            选择公告过期时间
-          </span>
-          <el-date-picker
-            v-model="edit.row.overtime"
-            type="datetime"
-            placeholder="选择日期时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
+        <div class="down-options">
+          <div class="block">
+            <span class="demonstration">
+              选择公告过期时间
+            </span>
+            <el-date-picker
+              v-model="edit.row.overtime"
+              type="datetime"
+              placeholder="选择日期时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            ></el-date-picker>
+          </div>
+          <div class="type-radio">
+            <span class="demonstration">
+              选择公告类型
+            </span>
+            <el-radio-group v-model="edit.row.type">
+              <el-radio-button label="1">
+                普通
+              </el-radio-button>
+              <el-radio-button label="2">
+                特别
+              </el-radio-button>
+              <el-radio-button label="3">
+                消息
+              </el-radio-button>
+              <el-radio-button label="4">
+                紧急
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+          <el-button type="primary" @click="submitEdit()">
+            提交修改
+          </el-button>
+          <el-button @click="edit.visible = false">
+            关闭
+          </el-button>
         </div>
-        <div class="type-radio">
-          <span class="demonstration">
-            选择公告类型
-          </span>
-          <el-radio-group v-model="edit.row.type">
-            <el-radio-button label="1">
-              普通
-            </el-radio-button>
-            <el-radio-button label="2">
-              特别
-            </el-radio-button>
-            <el-radio-button label="3">
-              消息
-            </el-radio-button>
-            <el-radio-button label="4">
-              紧急
-            </el-radio-button>
-          </el-radio-group>
-        </div>
-        <el-button type="primary" @click="submitEdit()">
-          提交修改
-        </el-button>
-        <el-button @click="edit.visible = false">
-          关闭
-        </el-button>
       </div>
     </el-dialog>
     <div class="editor">
@@ -279,8 +281,7 @@ export default {
     async getContent(d) {
       try {
         var data = await getNotification(d)
-        console.log(data)
-        this.edit.content = data.content
+        this.edit.row.content = data.data.content
       } catch (e) {
         this.$message({
           type: 'error',
@@ -404,12 +405,13 @@ export default {
 <style lang="scss" scoped>
 .panel-notification {
   .editor-title, .title {
+    display: flex;
+    justify-content: flex-start;
     width: 25vw;
     font-family: "Microsoft YaHei";
     font-weight: bold;
     transform: scale(0.94, 1.08);
     margin-bottom: 10px;
-    margin-left: -1.6em;
   }
   .editor-title {
     width: 20vw;
@@ -438,6 +440,9 @@ export default {
     flex-direction: row;
     justify-content: flex-end;
   }
+}
+.down-options {
+  margin-top: 5vw;
 }
 .demonstration {
   margin-right: 2.4vw;

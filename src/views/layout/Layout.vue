@@ -15,7 +15,9 @@ import { NavBar, AppMain, SideBar } from './components';
 import ResizeMixin from './mixin/ResizeHandler';
 import { Component, Vue } from 'vue-property-decorator';
 import { mixins } from 'vue-class-component';
-import { DeviceType, AppModule } from '@/store/modules/app';
+import { DeviceType, AppModule, } from '@/store/modules/app';
+import { UserModule } from '../../store/modules/user';
+import { getUserInfo } from '../../api/profile';
 
 @Component({
   components: {
@@ -34,6 +36,20 @@ export default class Layout extends mixins(ResizeMixin) {
     };
   }
 
+  async mounted() {
+    console.log(UserModule.token)
+    try {
+      const data:any = await getUserInfo();
+      UserModule.GetLoggedUserInfo(data);     
+    } catch (err) {
+      this.$message({
+        type: 'error',
+        message: '获取个人信息失败',
+      })
+    }
+    console.log(UserModule.has_login)
+  }
+
   private handleClickOutside() {
     AppModule.CloseSideBar(false);
   }
@@ -43,7 +59,6 @@ export default class Layout extends mixins(ResizeMixin) {
 <style lang="scss" scoped>
   @import "src/styles/mixin.scss";
   @import "src/styles/variables.scss";
-
   .app-wrapper {
     @include clearfix;
     position: relative;
