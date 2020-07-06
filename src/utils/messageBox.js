@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from "vue";
 
 /**
  * 显示一个提示确认是否继续执行，确定后对话框立刻关闭
@@ -7,18 +7,21 @@ import Vue from 'vue'
  * @param {function} confirmCallback 确认时执行的回调
  */
 export function showConfirm(tips, cancelMsg, confirmCallback) {
-  Vue.prototype.$confirm(tips, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    confirmCallback()
-  }).catch(() => {
-    Vue.prototype.$message({
-      type: 'info',
-      message: cancelMsg
+  Vue.prototype
+    .$confirm(tips, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     })
-  })
+    .then(() => {
+      confirmCallback();
+    })
+    .catch(() => {
+      Vue.prototype.$message({
+        type: "info",
+        message: cancelMsg,
+      });
+    });
 }
 
 /**
@@ -37,33 +40,36 @@ export function showConfirm(tips, cancelMsg, confirmCallback) {
 export function showAsynConfirm(tips, cancelMsg, confirmCallback) {
   // 关闭弹框的回调
   // var close;
-  Vue.prototype.$confirm(tips, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    beforeClose: (action, instance, done) => {
-      if (action == 'confirm') {
-        instance.confirmButtonLoading = true
-        instance.confirmButtonText = '执行中...'
-        confirmCallback(() => {
-          instance.confirmButtonLoading = false
-          done()
-        })
-      }
-      if (action == 'cancle') {
-        instance.confirmButtonLoading = false
-      } else {
-        done()
-        instance.confirmButtonText = '确定'
-      }
-      instance.confirmButtonLoading = false
-    }
-  }).then(() => {
-    // 什么都不用做，在beforeClose中已经执行了回调
-  }).catch(() => {
-    Vue.prototype.$message({
-      type: 'info',
-      message: cancelMsg
+  Vue.prototype
+    .$confirm(tips, "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+      beforeClose: (action, instance, done) => {
+        if (action == "confirm") {
+          instance.confirmButtonLoading = true;
+          instance.confirmButtonText = "执行中...";
+          confirmCallback(() => {
+            instance.confirmButtonLoading = false;
+            done();
+          });
+        }
+        if (action == "cancle") {
+          instance.confirmButtonLoading = false;
+        } else {
+          done();
+          instance.confirmButtonText = "确定";
+        }
+        instance.confirmButtonLoading = false;
+      },
     })
-  })
+    .then(() => {
+      // 什么都不用做，在beforeClose中已经执行了回调
+    })
+    .catch(() => {
+      Vue.prototype.$message({
+        type: "info",
+        message: cancelMsg,
+      });
+    });
 }

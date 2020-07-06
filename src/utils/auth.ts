@@ -1,7 +1,6 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
-const TokenKey = 'shijian-admin';
-
+const TokenKey = "shijian-admin";
 
 export const getToken = () => Cookies.get(TokenKey);
 

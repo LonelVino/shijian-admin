@@ -1,0 +1,5 @@
+// .eslintignore  此文件是告诉eslint忽略哪些文件的
+build/**
+config/**
+public/**
+scripts/**

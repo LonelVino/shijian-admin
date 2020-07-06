@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { Message, MessageBox } from 'element-ui';
-import { getToken } from '@/utils/auth';
-import { UserModule } from '@/store/modules/user';
+import axios from "axios";
+import { Message, MessageBox } from "element-ui";
+import { getToken } from "@/utils/auth";
+import { UserModule } from "@/store/modules/user";
 
 const service = axios.create({
-  baseURL: '/api',
+  baseURL: "/api",
   timeout: 10000,
 });
 
@@ -13,13 +13,13 @@ service.interceptors.request.use(
   (config) => {
     // Add X-Token header to every request, you can add other custom headers here
     if (UserModule.token) {
-      config.headers['X-Token'] = getToken();
+      config.headers["X-Token"] = getToken();
     }
     return config;
   },
   (error) => {
     Promise.reject(error);
-  },
+  }
 );
 
 // Response interceptors
@@ -33,28 +33,28 @@ service.interceptors.response.use(
     // code == 60204: account or password is incorrect
     // You can change this part for your own usage.
     const res = response.data;
-    if (res.success!==1 && res.code !== 200) {
+    if (res.success !== 1 && res.code !== 200) {
       Message({
-        message: '未知错误' + res.message,
-        type: 'error',
+        message: "未知错误" + res.message,
+        type: "error",
         duration: 10 * 1000,
       });
       if (res.code === 508 || res.code === 512 || res.code === 500) {
         MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
-          '确定登出',
+          "你已被登出，可以取消继续留在该页面，或者重新登录",
+          "确定登出",
           {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning',
-          },
+            confirmButtonText: "重新登录",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
         ).then(() => {
           UserModule.FedLogOut().then(() => {
-            location.reload();  // To prevent bugs from vue-router
+            location.reload(); // To prevent bugs from vue-router
           });
         });
       }
-      return Promise.reject('error with code: ' + res.code);
+      return Promise.reject("error with code: " + res.code);
     } else {
       return response.data;
     }
@@ -62,12 +62,11 @@ service.interceptors.response.use(
   (error) => {
     Message({
       message: error.message,
-      type: 'error',
+      type: "error",
       duration: 10 * 1000,
     });
     return Promise.reject(error);
-  },
+  }
 );
 
 export default service;
-

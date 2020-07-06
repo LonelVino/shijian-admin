@@ -1,30 +1,30 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="classObj.mobile && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
-    <side-bar class="sidebar-container" :collapse="classObj.hideSidebar"/>
+    <div v-if="classObj.mobile && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <side-bar class="sidebar-container" :collapse="classObj.hideSidebar" />
     <div class="main-container">
-      <nav-bar/>
-      <app-main/>
+      <nav-bar />
+      <app-main />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 // @ts-ignore
-import { NavBar, AppMain, SideBar } from './components';
-import ResizeMixin from './mixin/ResizeHandler';
-import { Component, Vue } from 'vue-property-decorator';
-import { mixins } from 'vue-class-component';
-import { DeviceType, AppModule, } from '@/store/modules/app';
-import { UserModule } from '../../store/modules/user';
-import { getUserInfo } from '../../api/profile';
+import { NavBar, AppMain, SideBar } from "./components";
+import ResizeMixin from "./mixin/ResizeHandler";
+import { Component, Vue } from "vue-property-decorator";
+import { mixins } from "vue-class-component";
+import { DeviceType, AppModule } from "@/store/modules/app";
+import { UserModule } from "../../store/modules/user";
+import { getUserInfo } from "../../api/profile";
 
 @Component({
   components: {
     NavBar,
     SideBar,
-    AppMain,
-  },
+    AppMain
+  }
 })
 export default class Layout extends mixins(ResizeMixin) {
   get classObj() {
@@ -32,22 +32,22 @@ export default class Layout extends mixins(ResizeMixin) {
       hideSidebar: !this.sidebar.opened,
       openSidebar: this.sidebar.opened,
       withoutAnimation: this.sidebar.withoutAnimation,
-      mobile: this.device === DeviceType.Mobile,
+      mobile: this.device === DeviceType.Mobile
     };
   }
 
   async mounted() {
-    console.log(UserModule.token)
+    console.log(UserModule.token);
     try {
-      const data:any = await getUserInfo();
-      UserModule.GetLoggedUserInfo(data);     
+      const data: any = await getUserInfo();
+      UserModule.GetLoggedUserInfo(data);
     } catch (err) {
       this.$message({
-        type: 'error',
-        message: '获取个人信息失败',
-      })
+        type: "error",
+        message: "获取个人信息失败"
+      });
     }
-    console.log(UserModule.has_login)
+    console.log(UserModule.has_login);
   }
 
   private handleClickOutside() {
@@ -57,83 +57,83 @@ export default class Layout extends mixins(ResizeMixin) {
 </script>
 
 <style lang="scss" scoped>
-  @import "src/styles/mixin.scss";
-  @import "src/styles/variables.scss";
-  .app-wrapper {
-    @include clearfix;
-    position: relative;
-    height: 100%;
-    width: 100%;
-  }
+@import "src/styles/mixin.scss";
+@import "src/styles/variables.scss";
+.app-wrapper {
+  @include clearfix;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
 
-  .drawer-bg {
-    background: #000;
-    opacity: 0.3;
-    width: 100%;
-    top: 0;
-    height: 100%;
-    position: absolute;
-    z-index: 999;
-  }
+.drawer-bg {
+  background: #000;
+  opacity: 0.3;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  position: absolute;
+  z-index: 999;
+}
 
+.main-container {
+  min-height: 100%;
+  transition: margin-left 0.28s;
+  margin-left: $sideBarWidth;
+  position: relative;
+}
+
+.sidebar-container {
+  transition: width 0.28s;
+  width: $sideBarWidth !important;
+  height: 100%;
+  position: fixed;
+  font-size: 0px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.hideSidebar {
   .main-container {
-    min-height: 100%;
-    transition: margin-left .28s;
-    margin-left: $sideBarWidth;
-    position: relative;
+    margin-left: 36px;
   }
 
   .sidebar-container {
-    transition: width 0.28s;
+    width: 36px !important;
+  }
+}
+
+/* for mobile response 适配移动端 */
+.mobile {
+  .main-container {
+    margin-left: 0px;
+  }
+
+  .sidebar-container {
+    transition: transform 0.28s;
     width: $sideBarWidth !important;
-    height: 100%;
+  }
+
+  &.openSidebar {
     position: fixed;
-    font-size: 0px;
     top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1001;
-    overflow: hidden;
   }
 
-  .hideSidebar {
-    .main-container {
-      margin-left: 36px;
-    }
-
+  &.hideSidebar {
     .sidebar-container {
-      width: 36px !important;
+      transition-duration: 0.3s;
+      transform: translate3d(-$sideBarWidth, 0, 0);
     }
   }
+}
 
-  /* for mobile response 适配移动端 */
-  .mobile {
-    .main-container {
-      margin-left: 0px;
-    }
-
-    .sidebar-container {
-      transition: transform .28s;
-      width: $sideBarWidth !important;
-    }
-
-    &.openSidebar {
-      position: fixed;
-      top: 0;
-    }
-
-    &.hideSidebar {
-      .sidebar-container {
-        transition-duration: 0.3s;
-        transform: translate3d(-$sideBarWidth, 0, 0);
-      }
-    }
+.withoutAnimation {
+  .main-container,
+  .sidebar-container {
+    transition: none;
   }
-
-  .withoutAnimation {
-    .main-container,
-    .sidebar-container {
-      transition: none;
-    }
-  }
+}
 </style>

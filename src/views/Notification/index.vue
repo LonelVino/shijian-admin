@@ -1,15 +1,8 @@
 <template>
   <div class="panel-notification panel-dev">
     <div class="board">
-      <p class="title">
-        所有（未过期的）实践公告
-      </p>
-      <pager 
-        ref="refresh" 
-        :page-size="8" 
-        :request-func="getList" 
-        :error-msg="'无法获取'"
-      >
+      <p class="title">所有（未过期的）实践公告</p>
+      <pager ref="refresh" :page-size="8" :request-func="getList" :error-msg="'无法获取'">
         <el-table
           v-loading="loading"
           slot-scope="props"
@@ -20,18 +13,10 @@
         >
           <el-table-column prop="title" label="类型">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.type==1" type="primary">
-                普通
-              </el-tag>
-              <el-tag v-if="scope.row.type == 2" type="success">
-                特别
-              </el-tag>
-              <el-tag v-if="scope.row.type == 3" type="info">
-                消息
-              </el-tag>
-              <el-tag v-if="scope.row.type == 4" type="danger">
-                紧急
-              </el-tag>
+              <el-tag v-if="scope.row.type==1" type="primary">普通</el-tag>
+              <el-tag v-if="scope.row.type == 2" type="success">特别</el-tag>
+              <el-tag v-if="scope.row.type == 3" type="info">消息</el-tag>
+              <el-tag v-if="scope.row.type == 4" type="danger">紧急</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="title" label="标题"></el-table-column>
@@ -39,12 +24,8 @@
           <el-table-column prop="update_time" label="最新更新时间" width="180"></el-table-column>
           <el-table-column label="操作" width="180">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.row)">
-                编辑
-              </el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.row)">
-                删除
-              </el-button>
+              <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -68,14 +49,11 @@
             style="height: 500px;"
             :options="editorOption"
             placeholder="请输入新的通知内容"
-          >
-          </quill-editor>
+          ></quill-editor>
         </div>
         <div class="down-options">
           <div class="block">
-            <span class="demonstration">
-              选择公告过期时间
-            </span>
+            <span class="demonstration">选择公告过期时间</span>
             <el-date-picker
               v-model="edit.row.overtime"
               type="datetime"
@@ -84,37 +62,21 @@
             ></el-date-picker>
           </div>
           <div class="type-radio">
-            <span class="demonstration">
-              选择公告类型
-            </span>
+            <span class="demonstration">选择公告类型</span>
             <el-radio-group v-model="edit.row.type">
-              <el-radio-button label="1">
-                普通
-              </el-radio-button>
-              <el-radio-button label="2">
-                特别
-              </el-radio-button>
-              <el-radio-button label="3">
-                消息
-              </el-radio-button>
-              <el-radio-button label="4">
-                紧急
-              </el-radio-button>
+              <el-radio-button label="1">普通</el-radio-button>
+              <el-radio-button label="2">特别</el-radio-button>
+              <el-radio-button label="3">消息</el-radio-button>
+              <el-radio-button label="4">紧急</el-radio-button>
             </el-radio-group>
           </div>
-          <el-button type="primary" @click="submitEdit()">
-            提交修改
-          </el-button>
-          <el-button @click="edit.visible = false">
-            关闭
-          </el-button>
+          <el-button type="primary" @click="submitEdit()">提交修改</el-button>
+          <el-button @click="edit.visible = false">关闭</el-button>
         </div>
       </div>
     </el-dialog>
     <div class="editor">
-      <p class="editor-title">
-        创建新的实践公告
-      </p>
+      <p class="editor-title">创建新的实践公告</p>
       <el-input v-model="currentNotification.title" placeholder="请输入通知标题"></el-input>
       <div class="quill-editor">
         <el-card style="height: 610px;">
@@ -124,13 +86,10 @@
             style="height: 500px;"
             :options="editorOption"
             placeholder="请输入通知内容"
-          >
-          </quill-editor>
+          ></quill-editor>
         </el-card>
         <div class="block">
-          <span class="demonstration">
-            选择公告过期时间
-          </span>
+          <span class="demonstration">选择公告过期时间</span>
           <el-date-picker
             v-model="currentNotification.overtime"
             type="datetime"
@@ -139,27 +98,15 @@
           ></el-date-picker>
         </div>
         <div class="type-radio">
-          <span class="demonstration">
-            选择公告类型
-          </span>
+          <span class="demonstration">选择公告类型</span>
           <el-radio-group v-model="currentNotification.type">
-            <el-radio-button label="1">
-              普通
-            </el-radio-button>
-            <el-radio-button label="2">
-              特别
-            </el-radio-button>
-            <el-radio-button label="3">
-              消息
-            </el-radio-button>
-            <el-radio-button label="4">
-              紧急
-            </el-radio-button>
+            <el-radio-button label="1">普通</el-radio-button>
+            <el-radio-button label="2">特别</el-radio-button>
+            <el-radio-button label="3">消息</el-radio-button>
+            <el-radio-button label="4">紧急</el-radio-button>
           </el-radio-group>
         </div>
-        <el-button class="submit-button" type="primary" @click="submit()">
-          提交
-        </el-button>
+        <el-button class="submit-button" type="primary" @click="submit()">提交</el-button>
       </div>
     </div>
   </div>
@@ -176,10 +123,8 @@ import {
   deleteNotification,
   getNotification
 } from '@/api/notification'
-import {
-  quillEditor
-} from 'vue-quill-editor'
-import { DeviceType, AppModule } from '@/store/modules/app';
+import { quillEditor } from 'vue-quill-editor'
+import { DeviceType, AppModule } from '@/store/modules/app'
 
 export default {
   name: 'PanelNotification',
@@ -290,8 +235,8 @@ export default {
       }
     },
     handleEdit(data) {
-      this.edit.loading = true;
-      (this.edit.visible = true), (this.edit.row = this.parseForm(data))
+      this.edit.loading = true
+      ;(this.edit.visible = true), (this.edit.row = this.parseForm(data))
       this.temp = this.parseForm(data)
       this.getContent(this.edit.row.notification_id)
       setTimeout(() => {
@@ -404,11 +349,12 @@ export default {
 
 <style lang="scss" scoped>
 .panel-notification {
-  .editor-title, .title {
+  .editor-title,
+  .title {
     display: flex;
     justify-content: flex-start;
     width: 25vw;
-    font-family: "Microsoft YaHei";
+    font-family: 'Microsoft YaHei';
     font-weight: bold;
     transform: scale(0.94, 1.08);
     margin-bottom: 10px;
@@ -452,16 +398,16 @@ export default {
   margin-bottom: 1.2vw;
 }
 @media screen and (max-width: 940px) {
- .panel-notification{
-   .title,
-   .editor {
+  .panel-notification {
+    .title,
+    .editor {
       font-size: 13px;
     }
- }
+  }
 }
 
 @media screen and (max-width: 540px) {
-  .panel-notification{
+  .panel-notification {
     .title,
     .editor {
       font-size: 12px;
@@ -475,7 +421,7 @@ export default {
 
 <style lang="scss">
 @media screen and (max-width: 1000px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 16px;
       .title {
@@ -490,14 +436,15 @@ export default {
     .el-table .cell {
       font-size: 15px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 8px 0;
     }
   }
 }
 
 @media screen and (max-width: 700px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 14px;
       .title {
@@ -519,14 +466,15 @@ export default {
     .el-table .cell {
       font-size: 14px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 6px 0;
     }
   }
 }
 
 @media screen and (max-width: 410px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 12px;
       .title {
@@ -548,7 +496,8 @@ export default {
     .el-table .cell {
       font-size: 12px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 4px 0;
     }
   }

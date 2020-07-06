@@ -1,9 +1,7 @@
 <template>
   <div class="panel-note panel-dev note-all">
     <div class="board">
-      <p class="title">
-        所有留言
-      </p>
+      <p class="title">所有留言</p>
       <pager ref="refresh" :page-size="24" :request-func="getList" :error-msg="'无法获取'">
         <el-table
           v-loading="loading"
@@ -20,12 +18,8 @@
           </el-table-column>
           <el-table-column label="状态" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.status == 1">
-                已回复
-              </el-tag>
-              <el-tag v-if="scope.row.status == 0" type="warning">
-                未回复
-              </el-tag>
+              <el-tag v-if="scope.row.status == 1">已回复</el-tag>
+              <el-tag v-if="scope.row.status == 0" type="warning">未回复</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="title" label="标题"></el-table-column>
@@ -79,12 +73,7 @@
         </el-table>
       </pager>
     </div>
-    <el-dialog
-      v-dialogDrag
-      title="回复留言"
-      :visible.sync="dialogReplyVisible"
-      :fullscreen="isPhone"
-    >
+    <el-dialog v-dialogDrag title="回复留言" :visible.sync="dialogReplyVisible" :fullscreen="isPhone">
       <div class="dialog-details">
         <p v-if="reply.row.status == 1" class="warn">
           <b>当前操作将覆盖上次的回复</b>
@@ -93,12 +82,8 @@
         <p>留言学生：{{ reply.row.user_name }}</p>
         <p>留言内容：{{ reply.row.content }}</p>
         <p>留言时间：{{ reply.row.create_time }}</p>
-        <p v-if="reply.row.status == 1" class="reply">
-          上次回复：{{ reply.row.reply }}
-        </p>
-        <p v-if="reply.row.status == 1" class="reply">
-          回复时间：{{ reply.row.reply_time }}
-        </p>
+        <p v-if="reply.row.status == 1" class="reply">上次回复：{{ reply.row.reply }}</p>
+        <p v-if="reply.row.status == 1" class="reply">回复时间：{{ reply.row.reply_time }}</p>
       </div>
       <el-input
         v-if="reply.row.status == 0"
@@ -117,15 +102,14 @@
         placeholder="请输入修改后的回复"
       ></el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogReplyVisible = false">
-          取 消
-        </el-button>
-        <el-button v-if="reply.row.status == 0" type="primary" :loading="reply.loading" @click="submitReply()">
-          确 定
-        </el-button>
-        <el-button v-else type="primary" :loading="reply.loading" @click="submitReply()">
-          确 定
-        </el-button>
+        <el-button @click="dialogReplyVisible = false">取 消</el-button>
+        <el-button
+          v-if="reply.row.status == 0"
+          type="primary"
+          :loading="reply.loading"
+          @click="submitReply()"
+        >确 定</el-button>
+        <el-button v-else type="primary" :loading="reply.loading" @click="submitReply()">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -144,12 +128,8 @@
           :rows="4"
           placeholder="请填写新的内容"
         ></el-input>
-        <el-button type="primary" @click="submitEdit()">
-          提交
-        </el-button>
-        <el-button @click="edit.visible = false">
-          关闭
-        </el-button>
+        <el-button type="primary" @click="submitEdit()">提交</el-button>
+        <el-button @click="edit.visible = false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -161,7 +141,7 @@ import { showAsynConfirm } from '@/utils/messageBox'
 import { getByUserId } from '@/api/common'
 import { getAllNote, replyNote, putNote, deleteNote } from '@/api/note'
 import NoteInfo from '@/components/NoteInfo.vue'
-import { DeviceType, AppModule } from '@/store/modules/app';
+import { DeviceType, AppModule } from '@/store/modules/app'
 
 export default {
   name: 'Panelnote',
@@ -173,11 +153,13 @@ export default {
     return {
       loading: false,
       notes: [],
-      edit: { // 修改留言
+      edit: {
+        // 修改留言
         row: {},
         visible: false
       },
-      reply: { // 回复留言
+      reply: {
+        // 回复留言
         row: {},
         note_id: '',
         content: '',
@@ -206,13 +188,15 @@ export default {
         })
       }
     },
-    handleReply(row) {  // 构造回复的数据体
+    handleReply(row) {
+      // 构造回复的数据体
       this.dialogReplyVisible = true
       this.reply.note_id = row.note_id
-      this.reply.row = row,
-      this.reply.user_name = this.getUserName(row.author_id)
+      ;(this.reply.row = row),
+        (this.reply.user_name = this.getUserName(row.author_id))
     },
-    submitReply() {  // 提交回复
+    submitReply() {
+      // 提交回复
       if (this.reply.content == '') {
         this.$message({
           type: 'warning',
@@ -232,7 +216,7 @@ export default {
         this.reply.content = ''
         this.$message({
           type: 'success',
-          message: this.reply.row.status == 0 ? '回复成功': '回复修改成功'
+          message: this.reply.row.status == 0 ? '回复成功' : '回复修改成功'
         })
         done()
         this.changePages(1)
@@ -253,11 +237,14 @@ export default {
       }
       return params
     },
-    handleEdit(data) { // 修改留言
-      (this.edit.visible = true), (this.edit.row = this.parseForm(data))
+    handleEdit(data) {
+      // 修改留言
+      this.edit.visible = true
+      this.edit.row = this.parseForm(data)
       this.temp = this.parseForm(data)
     },
-    submitEdit() {  // 提交留言的修改
+    submitEdit() {
+      // 提交留言的修改
       if (
         this.edit.row.title == this.temp.title &&
         this.edit.row.content == this.temp.content
@@ -337,7 +324,8 @@ export default {
     .el-table .cell {
       font-size: 15px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 6px 0;
       width: 80px;
     }
@@ -352,7 +340,8 @@ export default {
     .el-table .cell {
       font-size: 12px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 6px 0;
       width: 80px;
     }
@@ -367,7 +356,7 @@ export default {
 .panel-note {
   .title {
     width: 15vw;
-    font-family: "Microsoft YaHei";
+    font-family: 'Microsoft YaHei';
     font-weight: bold;
     transform: scale(0.94, 1.08);
     margin-bottom: 15px;
@@ -433,20 +422,20 @@ export default {
 }
 
 @media screen and (max-width: 940px) {
- .note-all{
-   .title {
+  .note-all {
+    .title {
       font-size: 13px;
     }
     .line,
     .info {
       font-size: 13px;
     }
- }
+  }
 }
 
 @media screen and (max-width: 540px) {
-  .note-all{
-   .title {
+  .note-all {
+    .title {
       font-size: 12px;
     }
     .line,

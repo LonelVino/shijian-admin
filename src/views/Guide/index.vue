@@ -1,9 +1,7 @@
 <template>
   <div class="panel-material panel-dev">
     <div id="board" class="board">
-      <p class="title">
-        所有资料下载
-      </p>
+      <p class="title">所有资料下载</p>
       <pager ref="refresh" :page-size="8" :request-func="getList" :error-msg="'无法获取'">
         <el-table
           slot-scope="props"
@@ -12,11 +10,7 @@
           class="material-board"
           style="width: 100%"
         >
-          <el-table-column
-            prop="title"
-            sortable
-            label="标题"
-          ></el-table-column>
+          <el-table-column prop="title" sortable label="标题"></el-table-column>
           <el-table-column prop="create_time" label="上传时间" width="180"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
@@ -45,9 +39,7 @@
       </pager>
     </div>
     <div class="upload">
-      <p class="upload-title">
-        上传区
-      </p>
+      <p class="upload-title">上传区</p>
       <el-input v-model="params.title" class="upload-input" placeholder="请输入资料标题"></el-input>
       <el-upload
         ref="uploader"
@@ -66,18 +58,12 @@
         <div class="el-upload__text">
           将文件拖到此处，或
           <em>点击上传</em>
-          <br>（一次最多上传一个文件）
+          <br />（一次最多上传一个文件）
         </div>
-        <div slot="tip" class="el-upload__tip">
-          文件长度不能超过8MB
-        </div>
+        <div slot="tip" class="el-upload__tip">文件长度不能超过8MB</div>
       </el-upload>
-      <el-button class="upload-button" type="primary" @click="commit">
-        上传文件
-      </el-button>
-      <el-button class="upload-button" type="primary" @click="checkMine">
-        我的上传
-      </el-button>
+      <el-button class="upload-button" type="primary" @click="commit">上传文件</el-button>
+      <el-button class="upload-button" type="primary" @click="checkMine">我的上传</el-button>
       <el-dialog v-dialogDrag title="我的上传" :visible.sync="dialogTableVisible" :fullscreen="isPhone">
         <el-table
           v-loading="loading"
@@ -119,15 +105,14 @@
 </template>
 
 <script>
-import Pager from '@/components/ArtPager'
-import { showAsynConfirm } from '@/utils/messageBox'
-import { getAllGuide, deleteOneGuide } from '@/api/guide'
-import { DeviceType, AppModule } from '@/store/modules/app';
-import { UserModule } from '../../store/modules/user';
-
+import Pager from "@/components/ArtPager";
+import { showAsynConfirm } from "@/utils/messageBox";
+import { getAllGuide, deleteOneGuide } from "@/api/guide";
+import { DeviceType, AppModule } from "@/store/modules/app";
+import { UserModule } from "../../store/modules/user";
 
 export default {
-  name: 'PanelMaterial',
+  name: "PanelMaterial",
   components: {
     Pager
   },
@@ -138,23 +123,23 @@ export default {
       materials: [],
       myMaterials: [],
       params: {
-        title: ''
+        title: ""
       },
       fileList: []
-    }
+    };
   },
   methods: {
     async _getAllGuides() {
-      this.loading = true
+      this.loading = true;
       try {
-        const data = await getAllGuide()
-        this.materials = data.data
-        this.loading = false
+        const data = await getAllGuide();
+        this.materials = data.data;
+        this.loading = false;
       } catch (message) {
         this.$message({
-          type: 'error',
+          type: "error",
           message: message
-        })
+        });
       }
     },
     // 分页器获取方法
@@ -162,89 +147,89 @@ export default {
     // 删除某个文件
     handleDelete(row) {
       showAsynConfirm(
-        '该操作不可撤销，确定删除该资料？',
-        '删除已取消',
+        "该操作不可撤销，确定删除该资料？",
+        "删除已取消",
         done => {
-          this._handleDelete(row.guide_id, done)
+          this._handleDelete(row.guide_id, done);
         }
-      )
+      );
     },
     // async样式的删除请求
     async _handleDelete(id, done) {
-      const delete_id = id.toString()
+      const delete_id = id.toString();
       try {
-        const data = await deleteOneGuide(id)
+        const data = await deleteOneGuide(id);
         this.$message({
-          type: 'success',
-          message: '已删除！'
-        })
-        done()
-        this.changePages(1)
+          type: "success",
+          message: "已删除！"
+        });
+        done();
+        this.changePages(1);
       } catch (message) {
-        done()
+        done();
         this.$message({
-          type: 'error',
-          message: '删除失败！'
-        })
+          type: "error",
+          message: "删除失败！"
+        });
       }
-      this._getAllGuides()
+      this._getAllGuides();
     },
     // 提交上传
     commit() {
-      if (this.params.title == '') {
+      if (this.params.title == "") {
         this.$message({
-          type: 'warning',
-          message: '上传失败，资料不可以没有标题！'
-        })
+          type: "warning",
+          message: "上传失败，资料不可以没有标题！"
+        });
       } else {
-        showAsynConfirm('您确定要上传该资料？', '已取消上传', done => {
-          this._commit(done)
-        })
+        showAsynConfirm("您确定要上传该资料？", "已取消上传", done => {
+          this._commit(done);
+        });
       }
     },
     _commit(done) {
       // TODO 检查大小以及自动清空列表
-      if (this.params.title == '') {
+      if (this.params.title == "") {
         this.$message({
-          type: 'error',
-          message: '上传失败，请完整填写信息！'
-        })
+          type: "error",
+          message: "上传失败，请完整填写信息！"
+        });
       } else {
-        this.$refs.uploader.submit()
+        this.$refs.uploader.submit();
       }
-      done()
+      done();
     },
     // 上传失败时
     onError(err) {
       this.$message({
-        type: 'error',
-        message: '上传失败！'
-      })
+        type: "error",
+        message: "上传失败！"
+      });
     },
     // 上传成功时
     onSuccess(response) {
       if (response.success) {
-        this.changePages(1)
-        this.fileList = []
-        this.params.title = null
+        this.changePages(1);
+        this.fileList = [];
+        this.params.title = null;
         this.$message({
-          type: 'success',
-          message: '上传成功！'
-        })
+          type: "success",
+          message: "上传成功！"
+        });
       } else {
         this.$message({
-          type: 'error',
+          type: "error",
           message: response.err_msg
-        })
+        });
       }
     },
     async checkMine() {
-      this.dialogTableVisible = true
-      this.myMaterials = []
+      this.dialogTableVisible = true;
+      this.myMaterials = [];
       try {
-        let data = await getAllGuide()
-        const total = data.data.total
-        data = data.data.data
+        let data = await getAllGuide();
+        const total = data.data.total;
+        data = data.data.data;
         for (let i = 0; i < total; i++) {
           if (data[i].author_id == UserModule.user_id) {
             this.myMaterials.push({
@@ -253,35 +238,35 @@ export default {
               author_id: data[i].author_id,
               title: data[i].title,
               update_time: data[i].update_time
-            })
+            });
           }
         }
-      this.$message({
-          type: 'success',
-          message: '获取成功'
-        })
+        this.$message({
+          type: "success",
+          message: "获取成功"
+        });
       } catch (message) {
         this.$message({
-          type: 'error',
+          type: "error",
           message: message
-        })
+        });
       }
     },
     changePages(i) {
-      this.$refs.refresh.turn(i)
+      this.$refs.refresh.turn(i);
     }
   },
   computed: {
     isPhone() {
-      return this.device === DeviceType.Mobile
+      return this.device === DeviceType.Mobile;
     },
     uploadData() {
       return {
         title: this.params.title
-      }
+      };
     }
   }
-}
+};
 </script>
 
  <style lang="scss" scoped>
@@ -311,7 +296,7 @@ export default {
     margin-top: 2em;
     overflow: hidden;
     margin-left: -6vw;
-    .upload-title{
+    .upload-title {
       margin-left: 6vw;
     }
     .switch {
@@ -333,15 +318,15 @@ export default {
   }
 }
 @media screen and (max-width: 940px) {
- .panel-material{
-   .title,
-   .upload-title,
-   .upload-input {
+  .panel-material {
+    .title,
+    .upload-title,
+    .upload-input {
       font-size: 13px;
     }
     .upload-input,
     .upload-demo {
-      transform: scale(0.80,0.80);
+      transform: scale(0.8, 0.8);
     }
     .upload-title {
       margin-left: 5vw;
@@ -355,18 +340,18 @@ export default {
     .upload-button {
       margin-left: 60px;
     }
- }
+  }
 }
 
 @media screen and (max-width: 540px) {
-  .panel-material{
+  .panel-material {
     .title,
     .upload-title,
     .upload-input {
       font-size: 12px;
     }
     .upload-button {
-      transform: scale(0.80,0.80);
+      transform: scale(0.8, 0.8);
       margin: 20px 0 0 20px;
       position: relative;
       top: -20px;
@@ -376,15 +361,14 @@ export default {
 </style>
 
 <style lang="scss">
-.el-table__row
-{
+.el-table__row {
   .cell {
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 }
 @media screen and (max-width: 1000px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 16px;
       .title {
@@ -399,14 +383,15 @@ export default {
     .el-table .cell {
       font-size: 15px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 8px 0;
     }
   }
 }
 
 @media screen and (max-width: 700px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 14px;
       .title {
@@ -421,14 +406,15 @@ export default {
     .el-table .cell {
       font-size: 14px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 6px 0;
     }
   }
 }
 
 @media screen and (max-width: 410px) {
-  .panel-dev{
+  .panel-dev {
     .title-line {
       font-size: 12px;
       .title {
@@ -443,7 +429,8 @@ export default {
     .el-table .cell {
       font-size: 12px;
     }
-    .el-table th, .el-table td {
+    .el-table th,
+    .el-table td {
       padding: 4px 0;
     }
   }

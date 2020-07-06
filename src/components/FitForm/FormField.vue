@@ -1,9 +1,5 @@
 <template>
-  <el-form-item
-    class="form-field"
-    :label="mirror.label"
-    :prop="mirror.prop"
-  >
+  <el-form-item class="form-field" :label="mirror.label" :prop="mirror.prop">
     <!-- 第一种：输入框 -->
     <el-input
       v-if="mirror.type == 'input'"
@@ -11,8 +7,7 @@
       :value="fieldValue"
       clearable
       @input="send"
-    >
-    </el-input>
+    ></el-input>
     <!-- 第二种：选择框 -->
     <el-select
       v-else-if="mirror.type == 'select'"
@@ -26,8 +21,7 @@
         :key="item.key"
         :label="item.label"
         :value="item.value"
-      >
-      </el-option>
+      ></el-option>
     </el-select>
     <!-- 第三种：级联选择器 -->
     <el-cascader
@@ -38,8 +32,7 @@
       :options="mirror.options"
       :props="mirror.props"
       @input="send"
-    >
-    </el-cascader>
+    ></el-cascader>
     <!-- 第四种：文本域 -->
     <el-input
       v-else-if="mirror.type == 'textarea'"
@@ -48,8 +41,7 @@
       :placeholder="mirror.placeholder"
       :value="fieldValue"
       @input="send"
-    >
-    </el-input>
+    ></el-input>
     <!-- 第五种；时间段选择 -->
     <el-date-picker
       v-else-if="mirror.type == 'daterange'"
@@ -60,32 +52,26 @@
       end-placeholder="结束日期"
       value-format="timestamp"
       @input="send"
-    >
-    </el-date-picker>
-    <div v-else>
-      字段错误
-    </div>
+    ></el-date-picker>
+    <div v-else>字段错误</div>
   </el-form-item>
 </template>
 
 <script>
 export default {
-  name: 'FormField',
-  props: [
-    'mirror',
-    'value'
-  ],
+  name: "FormField",
+  props: ["mirror", "value"],
   computed: {
     fieldValue() {
-      return this.value
+      return this.value;
     }
   },
   methods: {
     send(payload) {
-      this.$emit('input', payload)
+      this.$emit("input", payload);
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

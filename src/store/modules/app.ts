@@ -1,6 +1,12 @@
-import Cookies from 'js-cookie';
-import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators';
-import store from '@/store';
+import Cookies from "js-cookie";
+import {
+  VuexModule,
+  Module,
+  Mutation,
+  Action,
+  getModule,
+} from "vuex-module-decorators";
+import store from "@/store";
 
 export enum DeviceType {
   Mobile,
@@ -15,25 +21,25 @@ export interface AppState {
   };
 }
 
-@Module({ dynamic: true, store, name: 'app' })
+@Module({ dynamic: true, store, name: "app" })
 class App extends VuexModule implements AppState {
   public sidebar = {
-    opened: Cookies.get('sidebarStatus') !== 'closed',
+    opened: Cookies.get("sidebarStatus") !== "closed",
     withoutAnimation: false,
   };
   public device = DeviceType.Desktop;
 
-  @Action({ commit: 'TOGGLE_SIDEBAR' })
+  @Action({ commit: "TOGGLE_SIDEBAR" })
   public ToggleSideBar(withoutAnimation: boolean) {
     return withoutAnimation;
   }
 
-  @Action({ commit: 'CLOSE_SIDEBAR' })
+  @Action({ commit: "CLOSE_SIDEBAR" })
   public CloseSideBar(withoutAnimation: boolean) {
     return withoutAnimation;
   }
 
-  @Action({ commit: 'TOGGLE_DEVICE' })
+  @Action({ commit: "TOGGLE_DEVICE" })
   public ToggleDevice(device: DeviceType) {
     return device;
   }
@@ -41,9 +47,9 @@ class App extends VuexModule implements AppState {
   @Mutation
   private TOGGLE_SIDEBAR(withoutAnimation: boolean) {
     if (this.sidebar.opened) {
-      Cookies.set('sidebarStatus', 'closed');
+      Cookies.set("sidebarStatus", "closed");
     } else {
-      Cookies.set('sidebarStatus', 'opened');
+      Cookies.set("sidebarStatus", "opened");
     }
     this.sidebar.opened = !this.sidebar.opened;
     this.sidebar.withoutAnimation = withoutAnimation;
@@ -51,7 +57,7 @@ class App extends VuexModule implements AppState {
 
   @Mutation
   private CLOSE_SIDEBAR(withoutAnimation: boolean) {
-    Cookies.set('sidebarStatus', 'closed');
+    Cookies.set("sidebarStatus", "closed");
     this.sidebar.opened = false;
     this.sidebar.withoutAnimation = withoutAnimation;
   }
