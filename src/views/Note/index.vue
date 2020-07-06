@@ -263,7 +263,7 @@ export default {
           this._submitEdit(done)
         })
       }
-    },
+    }, 
     async _submitEdit(done) {
       try {
         const data = await putNote(this.edit.row.note_id, this.edit.row)
